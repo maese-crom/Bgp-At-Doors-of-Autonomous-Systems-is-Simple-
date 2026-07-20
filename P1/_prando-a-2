@@ -1,0 +1,24 @@
+# Using FRRouting latest image as base.
+FROM frrouting/frr:latest
+
+# Installing some packages, "iputils", "bridge" and "bash".
+RUN apk add --no-cache iputils vim bash bridge
+
+# Configuring daemons.
+ENV DAEMONS="zebra bgpd ospfd isisd"
+
+# This command create 'empty config files' for all daemons
+RUN touch /etc/frr/bgpd.conf /etc/frr/ospfd.conf /etc/frr/isisd.conf \
+    && chown frr:frr /etc/frr/*.conf \
+    && chmod 640 /etc/frr/*.conf
+RUN echo -e "zebra=yes\nbgpd=yes\nospfd=yes\nisisd=yes\n" > /etc/frr/daemons
+
+# Copying the endpoint script and changing its permissions.
+COPY start.sh /start.sh
+RUN chmod 777 /start.sh
+ENTRYPOINT ["/bin/bash", "/start.sh"]
+
+# NOTES                                                                         
+# - bgpd (Border Gateway Protocol Daemon): protocol to exchange routes between autonomous systems (Internet).
+# - ospfd: internal routing protocol that calculates the shortest path.
+# - isisd: internal routing protocol used in large and scalable networks.

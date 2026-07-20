@@ -1,0 +1,5 @@
+# Using an Alpine latest image as base.
+FROM alpine:latest
+
+# Installing some packages, "iproute2", "iputils" and "bash", like in BusyBox container.
+RUN apk add --no-cache bash iputils vim iproute2 tcpdump
